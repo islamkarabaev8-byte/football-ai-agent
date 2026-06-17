@@ -1,10 +1,10 @@
 name: Daily Football Report
 
 on:
-  schedule:
-    # 17:00 UTC = 22:00 по Алматы (UTC+5)
-    - cron: "0 17 * * *"
-  workflow_dispatch:  # кнопка ручного запуска в GitHub
+  # Запуск точно в 22:00 по Алматы выполняет внешний сервис cron-job.org,
+  # который дёргает этот workflow_dispatch через GitHub API.
+  # (Родное расписание GitHub `schedule` ненадёжно — пропускает запуски.)
+  workflow_dispatch:
 
 jobs:
   send-report:
