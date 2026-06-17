@@ -1,41 +1,51 @@
 @echo off
-echo ============================================
-echo   Football AI Agent - Установка
-echo ============================================
+title Football AI Bot
+
+echo.
+echo  ================================
+echo    FOOTBALL AI BOT - ЗАПУСК
+echo  ================================
 echo.
 
-REM Проверяем Python
+REM === ШАГ 1: Проверяем Python ===
 py --version >nul 2>&1
 if %errorlevel% == 0 (
-    echo [OK] Python найден
-    py -m pip install -r requirements.txt
-    goto :run
+    set PY=py
+    goto :install
 )
-
 python --version >nul 2>&1
 if %errorlevel% == 0 (
-    echo [OK] Python найден
-    python -m pip install -r requirements.txt
-    goto :run
+    set PY=python
+    goto :install
 )
 
-echo [!] Python не найден. Скачиваем и устанавливаем...
-curl -o python_installer.exe https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe
-python_installer.exe /quiet InstallAllUsers=0 PrependPath=1 Include_pip=1
-del python_installer.exe
+REM Python не найден — скачиваем автоматически
+echo  [1/3] Устанавливаем Python...
+curl -# -o "%TEMP%\python_setup.exe" https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe
+"%TEMP%\python_setup.exe" /quiet InstallAllUsers=0 PrependPath=1 Include_pip=1
+del "%TEMP%\python_setup.exe"
+set PY=py
+echo  [OK] Python установлен
 echo.
-echo [OK] Python установлен. Перезапустите этот файл.
-pause
-exit
 
-:run
+REM === ШАГ 2: Устанавливаем библиотеки ===
+:install
+echo  [2/3] Устанавливаем библиотеки...
+%PY% -m pip install -q -r requirements.txt
+echo  [OK] Библиотеки установлены
 echo.
-echo [OK] Зависимости установлены
+
+REM === ШАГ 3: Запускаем бота ===
+echo  [3/3] Запускаем бота...
 echo.
-echo ============================================
-echo   Запуск агента...
-echo   Отправьте /start боту в Telegram
-echo ============================================
+echo  Бот работает! Напишите /report в Telegram чтобы получить отчёт.
+echo  Каждый день в 22:00 по Алматы отчёт придёт автоматически.
+echo  Закройте это окно чтобы остановить бота.
 echo.
-python agent.py
+echo  ================================
+echo.
+%PY% agent.py
+
+echo.
+echo  Бот остановлен.
 pause
