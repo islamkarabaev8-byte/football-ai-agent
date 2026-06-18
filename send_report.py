@@ -10,7 +10,26 @@ import time
 import requests
 from datetime import datetime, timezone, timedelta
 
-# === Настройки из переменных окружения (GitHub Secrets) ===
+
+def _load_env_file():
+    """Подхватываем .env рядом со скриптом, если переменные не заданы
+    (нужно для локального запуска через Планировщик Windows).
+    На GitHub Actions .env нет — там используются настоящие переменные окружения."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(path):
+        return
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            os.environ.setdefault(key.strip(), value.strip())
+
+
+_load_env_file()
+
+# === Настройки из переменных окружения (GitHub Secrets или .env) ===
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 CHAT_ID = os.environ["CHAT_ID"]
